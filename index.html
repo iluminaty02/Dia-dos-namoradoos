@@ -1,237 +1,322 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feliz Dia dos Namorados ❤️</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossa História em Capítulos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: monospace;
+            overflow-x: hidden;
+            perspective: 1500px;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        /* Botão para abrir e fechar o livro */
+        .btn-controle {
+            position: fixed;
+            top: 20px;
+            z-index: 100;
+            background-color: #ff4d4d;
+            color: white;
+            border: 2px solid black;
+            padding: 10px 20px;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px black;
+            transition: 0.2s;
+        }
 
-body{
-    background: linear-gradient(135deg,#3b0000,#7a0000,#b30000);
-    color:white;
-    font-family:'Poppins',sans-serif;
-    overflow-x:hidden;
-}
+        .btn-controle:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px black;
+        }
 
-.hero{
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:40px;
-}
+        /* Estrutura do Livro */
+        .livro {
+            position: relative;
+            width: 400px;
+            height: 550px;
+            transition: transform 1s ease-in-out;
+            transform-style: preserve-3d;
+        }
 
-h1{
-    font-family:'Great Vibes',cursive;
-    font-size:6rem;
-    color:#ffd1d1;
-    text-shadow:0 0 20px rgba(255,255,255,0.5);
-}
+        /* Estado aberto do livro */
+        .livro.aberto {
+            transform: rotateY(-180px) translateX(50%);
+        }
 
-.subtitle{
-    font-size:1.3rem;
-    max-width:700px;
-    margin-top:20px;
-    line-height:1.8;
-}
+        /* Configuração das Páginas */
+        .pagina {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #d32f2f;
+            border: 5px solid black;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform-origin: left center;
+            transition: transform 1s ease-in-out;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
 
-.heart{
-    position:fixed;
-    color:#ff9aa2;
-    animation:float 8s linear infinite;
-    opacity:0.5;
-}
+        /* Estilização Comum de Textos */
+        h1, h2, h3 {
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            text-align: center;
+            color: black;
+            margin-bottom: 15px;
+        }
 
-@keyframes float{
-    from{
-        transform:translateY(100vh);
-    }
-    to{
-        transform:translateY(-100px);
-    }
-}
+        p {
+            font-family: monospace;
+            color: black;
+            line-height: 1.5;
+            font-size: 14px;
+        }
 
-.section{
-    padding:100px 10%;
-}
+        .frase-canto {
+            font-family: monospace;
+            font-style: italic;
+            font-size: 12px;
+            text-align: right;
+            margin-top: auto;
+            border-top: 1px dashed black;
+            padding-top: 8px;
+        }
 
-.section-title{
-    text-align:center;
-    font-family:'Great Vibes',cursive;
-    font-size:4rem;
-    margin-bottom:50px;
-    color:#ffdada;
-}
+        /* Ordem das Camadas e Dobras (Animação) */
+        .capa {
+            z-index: 5;
+        }
 
-.collage{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:25px;
-}
+        .pagina1 {
+            z-index: 4;
+        }
 
-.card{
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.15);
-    padding:30px;
-    border-radius:25px;
-    transition:0.4s;
-}
+        .pagina2 {
+            z-index: 3;
+            /* Fica fixa na mesa quando aberto */
+            transform: rotateY(180deg); 
+        }
 
-.card:hover{
-    transform:translateY(-10px);
-}
+        .pagina3 {
+            z-index: 2;
+            transform-origin: right center;
+            left: 100%;
+            transform: rotateY(180deg);
+        }
 
-.card img{
-    width:100%;
-    border-radius:15px;
-    margin-bottom:15px;
-}
+        .contra-capa {
+            z-index: 1;
+            transform-origin: right center;
+            left: 100%;
+            transform: rotateY(180deg);
+        }
 
-.card p{
-    line-height:1.8;
-}
+        /* Movimentos ao abrir */
+        .livro.aberto .capa {
+            transform: rotateY(-180deg);
+            z-index: 1;
+        }
 
-.quote{
-    text-align:center;
-    font-size:1.4rem;
-    font-style:italic;
-    max-width:800px;
-    margin:auto;
-    line-height:2;
-}
+        .livro.aberto .pagina1 {
+            transform: rotateY(-180deg);
+            z-index: 2;
+        }
 
-footer{
-    text-align:center;
-    padding:50px;
-    color:#ffd6d6;
-}
+        .livro.aberto .pagina3 {
+            transform: rotateY(0deg);
+            z-index: 4;
+        }
 
-.glow{
-    animation:glow 3s infinite alternate;
-}
+        .livro.aberto .contra-capa {
+            transform: rotateY(0deg);
+            z-index: 3;
+        }
 
-@keyframes glow{
-    from{
-        text-shadow:0 0 10px #ff8a8a;
-    }
-    to{
-        text-shadow:0 0 30px #ffffff;
-    }
-}
-</style>
+        /* Versos das Páginas (para esconder o fundo quando viradas) */
+        .verso {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #b71c1c;
+            border: 5px solid black;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+        }
+
+        /* Sistema de Envelopes (Página 2) */
+        .container-envelopes {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            height: 50px;
+            cursor: pointer;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .envelope::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 15px 17px 0 17px;
+            border-color: #e0e0e0 transparent transparent transparent;
+        }
+
+        .envelope-wrapper:hover .envelope {
+            background-color: #ffebee;
+        }
+
+        /* Modal das Mensagens dos Envelopes */
+        .mensagem-popup {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            left: 5%;
+            width: 90%;
+            background: white;
+            border: 3px solid black;
+            padding: 10px;
+            z-index: 20;
+            box-shadow: 4px 4px 0px black;
+            text-align: center;
+        }
+
+        .mensagem-popup.ativo {
+            display: block;
+        }
+
+        .fechar-popup {
+            display: block;
+            margin-top: 8px;
+            font-size: 11px;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<div id="hearts"></div>
+    <button class="btn-controle" onclick="alternarLivro()">Abrir / Fechar Livro</button>
 
-<section class="hero">
-    <h1 class="glow">Feliz Dia dos Namorados ❤️</h1>
+    <div class="livro" id="livro">
 
-    <p class="subtitle">
-        Algumas pessoas entram em nossas vidas e mudam tudo.
-        Não porque tentam, mas porque simplesmente existem.
-        E entre todas as coincidências do universo,
-        encontrar você parece ter sido a mais bonita delas.
-    </p>
-</section>
-
-<section class="section">
-    <h2 class="section-title">Pequenos Fragmentos de Amor</h2>
-
-    <div class="collage">
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800" alt="">
-            <p>
-                O amor não é encontrar alguém perfeito.
-                É olhar para alguém imperfeito e ainda assim
-                enxergar um universo inteiro de beleza.
-            </p>
+        <!-- CAPA -->
+        <div class="pagina capa">
+            <div style="margin-auto: 0; text-align: center; margin-top: 100px;">
+                <h1>Nossa história em capítulos</h1>
+                <p style="margin-top: 50px; font-weight: bold;">"Para o Arthur, com todo o meu amor."</p>
+            </div>
+            <div class="verso"></div>
         </div>
 
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800" alt="">
-            <p>
-                Entre bilhões de pessoas, meu coração
-                aprendeu a reconhecer exatamente a sua alma.
-            </p>
+        <!-- PÁGINA 1 (Esquerda) -->
+        <div class="pagina pagina1">
+            <div>
+                <h2>O Começo e a Conexão</h2>
+                <p>No primeiro dia em que te vi eu senti, bem lá no fundo q era você, que iria ser Você.</p>
+                <br>
+                <p style="font-style: italic; text-align: center;">
+                    "No ritmo dos dias, você é a minha calma,<br>
+                    A luz que ilumina os cantos da alma.<br>
+                    Com você, cada sonho é um plano traçado,<br>
+                    Meu amor, minha vida, meu eterno namorado."
+                </p>
+            </div>
+            <div class="verso"></div>
         </div>
 
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=800" alt="">
-            <p>
-                Existem abraços que parecem lar.
-                Existem olhares que parecem destino.
-                Existem pessoas que parecem eternidade.
-            </p>
-        </div>
+        <!-- PÁGINA 2 (Centro - Lepbook) -->
+        <div class="pagina pagina2">
+            <div>
+                <h2>O que eu amo em você</h2>
+                
+                <div class="container-envelopes">
+                    <!-- Envelope 1 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(1)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 2 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(2)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 3 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(3)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 4 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(4)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 5 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(5)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 6 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(6)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 7 -->
+                    <div class="envelope-wrapper" onclick="cannot(7); mostrarMensagem(7)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 8 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(8)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 9 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(9)">
+                        <div class="envelope">💌</div>
+                    </div>
+                    <!-- Envelope 10 -->
+                    <div class="envelope-wrapper" onclick="mostrarMensagem(10)">
+                        <div class="envelope">💗</div>
+                    </div>
+                </div>
 
-    </div>
-</section>
-
-<section class="section">
-    <h2 class="section-title">Para Sempre</h2>
-
-    <div class="quote">
-        "Se algum dia me perguntarem o que é amor,
-        talvez eu não saiba explicar.
-        Mas saberei apontar para você e dizer:
-        é exatamente isso."
-    </div>
-</section>
-
-<section class="section">
-    <h2 class="section-title">Carta ao Amor</h2>
-
-    <div class="card" style="max-width:900px;margin:auto;">
-        <p>
-            Amar é guardar alguém nos detalhes.
-            É lembrar da risada favorita,
-            das histórias repetidas,
-            dos sonhos contados baixinho.
-
-            Amar é escolher a mesma pessoa
-            todos os dias, mesmo quando ninguém está olhando.
-
-            Se o tempo apagar pegadas,
-            que ele nunca apague aquilo que construímos.
-            Porque algumas histórias não terminam.
-            Elas apenas continuam sendo escritas
-            dentro do coração.
-        </p>
-    </div>
-</section>
-
-<footer>
-    ❤️ Feito com amor para o Dia dos Namorados ❤️
-</footer>
-
-<script>
-const heartsContainer = document.getElementById('hearts');
-
-for(let i=0;i<40;i++){
-    const heart = document.createElement('div');
-    heart.classList.add('heart');
-    heart.innerHTML = '❤';
-    heart.style.left = Math.random()*100 + 'vw';
-    heart.style.fontSize = (Math.random()*30 + 15) + 'px';
-    heart.style.animationDuration = (Math.random()*6 + 4) + 's';
-    heart.style.animationDelay = Math.random()*5 + 's';
-    heartsContainer.appendChild(heart);
-}
-</script>
-
-</body>
-</html>
+                <!-- Popups de Mensagem Ocultos -->
+                <div id="msg-1" class="mensagem-popup"><p>Seu sorriso</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
+                <div id="msg-2" class="mensagem-popup"><p>Seus olhos</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
