@@ -1,1 +1,25 @@
+/* Área clicável no canto da capa */
+.canto-virar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    z-index: 20;
+}
 
+.canto-virar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-style: solid;
+    border-width: 0 60px 60px 0;
+    border-color: transparent #ffcccc transparent transparent;
+    transition: 0.3s;
+}
+
+.canto-virar:hover::after {
+    border-color: transparent #ffffff transparent transparent;
+}
