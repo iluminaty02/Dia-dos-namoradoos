@@ -5,307 +5,291 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nossa História em Capítulos</title>
     <style>
+        :root {
+            --bg-color: #fff5f5;
+            --card-bg: #ffffff;
+            --primary: #d946ef;
+            --accent: #e11d48;
+            --text: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #1a1a1a;
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            font-family: monospace;
-            overflow-x: hidden;
-            perspective: 1500px;
         }
 
-        /* Estrutura do Livro - Clicável para abrir/fechar */
-        .livro {
-            position: relative;
-            width: 400px;
-            height: 550px;
-            transition: transform 1s ease-in-out;
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
-
-        /* Estado aberto do livro */
-        .livro.aberto {
-            transform: rotateY(-180px) translateX(50%);
-        }
-
-        /* Configuração das Páginas */
-        .pagina {
-            position: absolute;
+        .lepbook-container {
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: #d32f2f;
-            border: 5px solid black;
-            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 968px) {
+            .lepbook-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid #fee2e2;
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transform-origin: left center;
-            transition: transform 1s ease-in-out;
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
         }
 
-        /* Estilização Comum de Textos */
-        h1, h2, h3 {
-            font-family: 'Georgia', serif;
-            font-weight: bold;
+        .cover-card {
             text-align: center;
-            color: black;
+            background: linear-gradient(135deg, #ffe4e6 0%, #fce7f3 100%);
+            padding: 50px 30px;
+        }
+
+        h1, h2, h3 {
+            color: var(--accent);
             margin-bottom: 15px;
         }
 
-        p {
-            font-family: monospace;
-            color: black;
-            line-height: 1.5;
-            font-size: 14px;
+        .cover-card h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
         }
 
-        .frase-canto {
-            font-family: monospace;
+        .highlight-phrase {
             font-style: italic;
-            font-size: 12px;
-            text-align: right;
-            margin-top: auto;
-            border-top: 1px dashed black;
-            padding-top: 8px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
         }
 
-        /* Ordem das Camadas e Dobras (Animação) */
-        .capa {
-            z-index: 5;
+        .poem {
+            font-style: italic;
+            line-height: 1.6;
+            margin-top: 15px;
+            color: #475569;
+            border-left: 3px solid var(--primary);
+            padding-left: 15px;
         }
 
-        .pagina1 {
-            z-index: 4;
-        }
-
-        .pagina2 {
-            z-index: 3;
-            transform: rotateY(180deg); 
-        }
-
-        .pagina3 {
-            z-index: 2;
-            transform-origin: right center;
-            left: 100%;
-            transform: rotateY(180deg);
-        }
-
-        .contra-capa {
-            z-index: 1;
-            transform-origin: right center;
-            left: 100%;
-            transform: rotateY(180deg);
-        }
-
-        /* Movimentos ao abrir */
-        .livro.aberto .capa {
-            transform: rotateY(-180deg);
-            z-index: 1;
-        }
-
-        .livro.aberto .pagina1 {
-            transform: rotateY(-180deg);
-            z-index: 2;
-        }
-
-        .livro.aberto .pagina3 {
-            transform: rotateY(0deg);
-            z-index: 4;
-        }
-
-        .livro.aberto .contra-capa {
-            transform: rotateY(0deg);
-            z-index: 3;
-        }
-
-        /* Versos das Páginas */
-        .verso {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: #b71c1c;
-            border: 5px solid black;
-            transform: rotateY(180deg);
-            backface-visibility: hidden;
-        }
-
-        /* Indicador visual de clique nos cantos das capas */
-        .dica-clique {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            font-size: 11px;
+        .corner-phrase {
+            margin-top: 30px;
+            font-size: 0.9rem;
             font-weight: bold;
-            color: rgba(0,0,0,0.6);
-            animation: piscar 1.5s infinite alternate;
+            color: var(--accent);
+            text-align: right;
+            border-top: 1px dashed #fca5a5;
+            padding-top: 10px;
         }
 
-        @keyframes piscar {
-            from { opacity: 0.3; }
-            to { opacity: 1; }
-        }
-
-        /* Sistema de Envelopes (Página 2) */
-        .container-envelopes {
+        /* Grid de Envelopes */
+        .envelope-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .envelope-wrapper {
-            position: relative;
-            height: 50px;
-            cursor: pointer;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
         }
 
         .envelope {
-            width: 100%;
-            height: 100%;
-            background-color: #fff;
-            border: 2px solid black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-            position: relative;
-            transition: background 0.3s;
+            background: #ffe4e6;
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--accent);
         }
 
-        .envelope::after {
-            content: '';
-            position: absolute;
+        .envelope:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Modal / Caixa de Mensagem */
+        .modal {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 15px 17px 0 17px;
-            border-color: #e0e0e0 transparent transparent transparent;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        .envelope-wrapper:hover .envelope {
-            background-color: #ffebee;
-        }
-
-        /* Modal das Mensagens dos Envelopes */
-        .mensagem-popup {
-            display: none;
-            position: absolute;
-            bottom: 70px;
-            left: 5%;
-            width: 90%;
+        .modal-content {
             background: white;
-            border: 3px solid black;
-            padding: 10px;
-            z-index: 20;
-            box-shadow: 4px 4px 0px black;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
             text-align: center;
-            cursor: default;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: popIn 0.3s ease-out;
         }
 
-        .mensagem-popup.ativo {
-            display: block;
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .fechar-popup {
-            display: block;
-            margin-top: 8px;
-            font-size: 11px;
-            text-decoration: underline;
+        .close-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
             cursor: pointer;
             font-weight: bold;
+        }
+
+        .text-content {
+            line-height: 1.6;
+            color: #475569;
         }
     </style>
 </head>
 <body>
 
-    <!-- O livro inteiro agora alterna o estado ao ser clicado -->
-    <div class="livro" id="livro" onclick="alternarLivro()">
-
+    <div class="lepbook-container">
+        
         <!-- CAPA -->
-        <div class="pagina capa">
-            <div style="text-align: center; margin-top: 100px;">
-                <h1>Nossa história em capítulos</h1>
-                <p style="margin-top: 50px; font-weight: bold;">"Para o Arthur, com todo o meu amor."</p>
-            </div>
-            <div class="dica-clique">Clique para abrir ➔</div>
-            <div class="verso"></div>
+        <div class="card cover-card full-width">
+            <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: #64748b;">Capa: O Convite</p>
+            <h1>"Nossa história em capítulos"</h1>
+            <p class="highlight-phrase">"Para o Arthur, com todo o meu amor."</p>
         </div>
 
-        <!-- PÁGINA 1 (Esquerda) -->
-        <div class="pagina pagina1">
+        <!-- PÁGINA 1: ESQUERDA -->
+        <div class="card">
             <div>
-                <h2>O Começo e a Conexão</h2>
-                <p>No primeiro dia em que te vi eu senti, bem lá no fundo q era você, que iria ser Você.</p>
-                <br>
-                <p style="font-style: italic; text-align: center;">
+                <h2>O dia em que meu mundo mudou</h2>
+                <p class="text-content">No primeiro dia em que te vi eu senti, bem lá no fundo q era você, que iria ser Você.</p>
+                <div class="poem">
                     "No ritmo dos dias, você é a minha calma,<br>
                     A luz que ilumina os cantos da alma.<br>
                     Com você, cada sonho é um plano traçado,<br>
                     Meu amor, minha vida, meu eterno namorado."
-                </p>
+                </div>
             </div>
-            <div class="verso"></div>
         </div>
 
-        <!-- PÁGINA 2 (Centro - Lepbook) -->
-        <!-- O stopPropagation impede o livro de fechar ao interagir com as cartas internas -->
-        <div class="pagina pagina2" onclick="event.stopPropagation()">
+        <!-- PÁGINA 2: CENTRO -->
+        <div class="card">
             <div>
                 <h2>O que eu amo em você</h2>
+                <p class="text-content" style="font-size: 0.9rem;">Clique nos envelopes para abrir ❤️</p>
                 
-                <div class="container-envelopes">
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(1, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(2, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(3, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(4, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(5, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(6, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(7, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(8, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(9, event)">
-                        <div class="envelope">💌</div>
-                    </div>
-                    <div class="envelope-wrapper" onclick="mostrarMensagem(10, event)">
-                        <div class="envelope">💗</div>
-                    </div>
+                <div class="envelope-grid">
+                    <div class="envelope" onclick="openEnvelope(1)">✉️ Motivo 1</div>
+                    <div class="envelope" onclick="openEnvelope(2)">✉️ Motivo 2</div>
+                    <div class="envelope" onclick="openEnvelope(3)">✉️ Motivo 3</div>
+                    <div class="envelope" onclick="openEnvelope(4)">✉️ Motivo 4</div>
+                    <div class="envelope" onclick="openEnvelope(5)">✉️ Motivo 5</div>
+                    <div class="envelope" onclick="openEnvelope(6)">✉️ Motivo 6</div>
+                    <div class="envelope" onclick="openEnvelope(7)">✉️ Motivo 7</div>
+                    <div class="envelope" onclick="openEnvelope(8)">✉️ Motivo 8</div>
+                    <div class="envelope" onclick="openEnvelope(9)">✉️ Motivo 9</div>
+                    <div class="envelope" onclick="openEnvelope(10)">✉️ Motivo 10</div>
                 </div>
+            </div>
+            <div class="corner-phrase">
+                "Meu lugar favorito no mundo é onde você está."
+            </div>
+        </div>
 
-                <!-- Popups de Mensagem Ocultos -->
-                <div id="msg-1" class="mensagem-popup"><p>Seu sorriso</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
-                <div id="msg-2" class="mensagem-popup"><p>Seus olhos</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
-                <div id="msg-3" class="mensagem-popup"><p>O apoio que você me dá</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
-                <div id="msg-4" class="mensagem-popup"><p>A sua paciência</p><span class="fechar-popup" onclick="fecharJanela(event)">[fechar]</span></div>
+        <!-- PÁGINA 3: DIREITA -->
+        <div class="card">
+            <div>
+                <h2>Nossos próximos capítulos</h2>
+                <p class="text-content">Eu quero realizar muitos sonhos aos seus lados, deis de as coisas boas até as mais importantes. Quero ter filhos com você, quero conhecer países ao seu lado, quero conquistar você todos os dias, ter você pra mim. Eu te amo muito a cima de tudo e eu sei que iremos realizar nossos sonhos juntos.</p>
+            </div>
+            <div class="corner-phrase">
+                "Estaremos sempre um pelo outro lado a lado, tanto nos momentos bons quanto nos momentos ruins."
+            </div>
+        </div>
+
+        <!-- CONTRA-CAPA -->
+        <div class="card full-width" style="background: linear-gradient(135deg, #fdf2f8 0%, #fff1f2 100%);">
+            <h2>Sempre você</h2>
+            <p class="text-content" style="white-space: pre-line; font-style: italic;">
+                "Meu Arthurzinho, muito obrigada por ser meu porto seguro e por sempre estar ao meu lado. Que a gente continue escrevendo nossa história com paciência, amor e muitos sorrisos. 
+
+                Mesmo neste dia dos namorados longe um do outro, sei que logo logo iremos passar este dia juntos como diz minha mãe e você, temos que dar tempo ao tempo, nunca vou me canar de esperar por você meu amor. Te amo hoje e sempre."
+            </p>
+        </div>
+
+    </div>
+
+    <!-- MODAL PARA OS ENVELOPES -->
+    <div class="modal" id="envelopeModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Motivo</h3>
+            <p id="modalText" class="text-content" style="font-size: 1.2rem; margin-top: 10px;"></p>
+            <button class="close-btn" onclick="closeEnvelope()">Fechar ❤️</button>
+        </div>
+    </div>
+
+    <script>
+        const mensagens = {
+            1: "seu sorriso",
+            2: "seus olhos",
+            3: "o apoio que você me dá",
+            4: "la sua paciência",
+            5: "o jeito que vc me trata e como faz me sentir",
+            6: "como eres engraçado",
+            7: "como você se dedica e c esforça",
+            8: "a forma em que voce me entende",
+            9: "da forma em que me olha",
+            10: "da forma que me ama 💗"
+        };
+
+        function openEnvelope(id) {
+            document.getElementById('modalTitle').innerText = `O que eu amo em você nº ${id}`;
+            document.getElementById('modalText').innerText = mensagens[id];
+            document.getElementById('envelopeModal').style.display = 'flex';
+        }
+
+        function closeEnvelope() {
+            document.getElementById('envelopeModal').style.display = 'none';
+        }
+
+        // Fecha se clicar fora do modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('envelopeModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
